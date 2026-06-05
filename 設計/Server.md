@@ -50,7 +50,8 @@ Nugetパッケージ
 システムログ
 ``` text:system-20260605.log
 2026-06-05 16:18:28.882|Info|GradeJudge.Server.Program|アプリケーション起動
-2026-06-05 16:18:29.591|Info|GradeJudge.Server.Program|アプリケーション終了 ExitCode=0
+2026-06-05 16:18:29.591|Error|GradeJudge.Server.Program|エラー: サーバー確立失敗
+2026-06-05 16:18:29.689|Info|GradeJudge.Server.Program|アプリケーション終了 ExitCode=1
 2026-06-05 16:29:47.904|Info|GradeJudge.Server.Program|アプリケーション起動
 ```
 
