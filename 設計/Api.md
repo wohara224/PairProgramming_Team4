@@ -2,16 +2,13 @@
 
 ## 処理の流れ
 
-サーバー開設
-
+[初期]サーバー開設
 1. 通信立上げ
 2. クライアントリクエスト待ち受け
 
-【必須】成績登録：POST
-
+[POST] 成績登録【必須】
 1. JSONから登録情報を受け取る
 2. バリデーションOKなら200、NGなら400
-
     - 正常なリクエスト：200（追加しました）
     - 正常で既存データがあった：200（更新しました）
     - JSONが不正；400エラー（リクエストが不正です）
@@ -19,74 +16,64 @@
     - 科目が存在しない：400エラー（存在しない科目が指定されました）
     - 点数が範囲外：400エラー（点数は0-100の範囲です）
 
-【必須】個人成績取得：GET
-
+[GET] 個人成績取得【必須】
 1. JSON内から付加情報を取り出す
 2. 生徒IDをもらってデータを返す
-
     - 正常なリクエスト：200（全科目分返す）
     - IDが不正：400エラー（生徒IDが不正です）
     - 生徒が存在しない：404エラー（生徒ID:**は存在しません）
 
-【オプション】落第者通知：GET
-
+[GET] 落第者通知【オプション】
 1. JSON内から付加情報を取り出す
 2. 必修科目の成績が60点未満の生徒一覧を返す
-
     - 正常なリクエスト：200（一覧を返す）
     - 正常なリクエスト（落第者0）：200（空リストを返す）
 
-【オプション】科目別ランキング：GET
-
+[GET] 科目別ランキング【オプション】
 1. JSON内から付加情報を取り出す
 2. 科目に従って上位5名分のデータを返す。
-
     - 正常なリクエスト：200（5名分のその科目の結果を返す）
     - IDが不正：400エラー（科目IDが不正です）
     - 科目が存在しない：404エラー（科目ID:**は存在しません）
 
 ## API仕様
 
-接続URL：http://xxx.xxx.xxx.xxx:50080
-
-成績登録<POST>：/api/register?student=*
-
-個人成績取得<GET>：/api/performance
-
-落第者通知<GET>：/api/dropout
-
-科目別ランキング<GET>：/api/ranking?subject=*
+- 接続URL：http://xxx.xxx.xxx.xxx:50080
+- 成績登録：/api/register?student=*
+- 個人成績取得：/api/performance
+- 落第者通知：/api/dropout
+- 科目別ランキング：/api/ranking?subject=*
 
 ## リクエストボディ
 
-/api/register <POST>
+[POST] /api/register
 ``` json
 { "student": 1, "subject": 1, "score": 94 }
 ```
 
-/api/performance?student=1 <GET>
+[GET] /api/performance?student=1
 ``` json
 {}
 ```
 
-/api/dropout <GET>
+[GET] /api/dropout
 ``` json
 {}
 ```
 
-/api/ranking?subject=1 <GET>
+[GET] /api/ranking?subject=1
 ``` json
 {}
 ```
 
 ## レスポンスボディ (200)
 
-/api/register <POST>
+/api/register
 ``` json
 {}
 ```
 
-/api/performance?student=1 <GET>
+/api/performance?student=1
 ``` json
 {
   "name": "田中",
@@ -98,7 +85,7 @@
 }
 ```
 
-/api/dropout <GET>
+/api/dropout
 ``` json
 {
   "dropoutStudents": [
@@ -119,7 +106,7 @@
 }
 ```
 
-/api/ranking?subject=1 <GET>
+/api/ranking?subject=1
 ``` json
 {
   "subject": "数学",
@@ -135,7 +122,7 @@
 
 ## レスポンスボディ (400)
 
-/api/register <POST> / リクエスト不正
+/api/register / リクエスト不正
 ``` json
 {
   "error": "Bad Request",
@@ -143,7 +130,7 @@
 }
 ```
 
-/api/register <POST> / 生徒が存在しない
+/api/register / 生徒が存在しない
 ``` json
 {
   "error": "Bad Request",
@@ -151,7 +138,7 @@
 }
 ```
 
-/api/register <POST> / 科目が存在しない
+/api/register / 科目が存在しない
 ``` json
 {
   "error": "Bad Request",
@@ -159,7 +146,7 @@
 }
 ```
 
-/api/register <POST> / 点数が範囲外
+/api/register / 点数が範囲外
 ``` json
 {
   "error": "Bad Request",
@@ -167,7 +154,7 @@
 }
 ``` 
 
-/api/performance?student=abc <GET> / 生徒ID不正
+/api/performance?student=abc / 生徒ID不正
 ``` json
 {
   "error": "Bad Request",
@@ -175,7 +162,7 @@
 }
 ```
 
-/api/ranking?subject=abc <GET> / 科目ID不正
+/api/ranking?subject=abc / 科目ID不正
 ``` json
 {
   "error": "Bad Request",
@@ -185,7 +172,7 @@
 
 ## レスポンスボディ (404)
 
-/api/performance?student=999 <GET> / 生徒が存在しない
+/api/performance?student=999 / 生徒が存在しない
 ``` json
 {
   "error": "Not Found",
@@ -193,7 +180,7 @@
 }
 ```
 
-/api/ranking?subject=999 <GET> / 科目が存在しない
+/api/ranking?subject=999 / 科目が存在しない
 ``` json
 {
   "error": "Not Found",
