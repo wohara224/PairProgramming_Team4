@@ -48,7 +48,7 @@ Nugetパッケージ
 - 落第者リスト：DropoutStudents (List:DropoutStudent)
   - DropoutStudent
     - 名前：Name (string)
-    - 落第科目：Subjects <List<SubjectScore>>
+    - 落第科目：Subjects (List:SubjectScore)
 
 /api/ranking?subject=1 -> RankingResponse
 - 科目名:Subject (string)
