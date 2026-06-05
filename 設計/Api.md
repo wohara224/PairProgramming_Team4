@@ -50,22 +50,51 @@
 
 接続URL：http://xxx.xxx.xxx.xxx:50080
 
-成績登録<POST>：/api/register
+成績登録<POST>：/api/register?id=*
 
 個人成績取得<GET>：/api/performance
 
 落第者通知<GET>：/api/dropout
 
-科目別ランキング<GET>：/api/ranking
+科目別ランキング<GET>：/api/ranking?subject=*
 
-## レスポンスボディ
+## リクエストボディ
 
-/api/register
+/api/register <POST>
+``` json
+{
+  "studentId": 1,
+  "subjects" : [
+    { "subjectId": 1, "score": 94 },
+    { "subjectId": 2, "score": 47 },
+    { "subjectId": 3, "score": 83 }
+  ]
+}
+```
+
+/api/performance?student=1 <GET>
 ``` json
 {}
 ```
 
-/api/performance
+/api/dropout <GET>
+``` json
+{}
+```
+
+/api/ranking?subject=1 <GET>
+``` json
+{}
+```
+
+## レスポンスボディ (200)
+
+/api/register <POST>
+``` json
+{}
+```
+
+/api/performance <GET>
 ``` json
 {
   "name": "田中",
@@ -77,7 +106,7 @@
 }
 ```
 
-/api/dropout
+/api/dropout <GET>
 ``` json
 [
   {
@@ -96,7 +125,7 @@
 ]
 ```
 
-/api/ranking
+/api/ranking <GET>
 ``` json
 {
   "subject": "数学",
