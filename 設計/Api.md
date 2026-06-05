@@ -25,8 +25,8 @@
 2. 生徒IDをもらってデータを返す
 
     - 正常なリクエスト：200（全科目分返す）
-    - JSONが不正；400エラー（リクエストが不正です）
-    - 生徒が存在しない：400エラー（存在しない生徒が指定されました）
+    - IDが不正：400エラー（生徒IDが不正です）
+    - 生徒が存在しない：404エラー（生徒ID:**は存在しません）
 
 【オプション】落第者通知：GET
 
@@ -35,7 +35,6 @@
 
     - 正常なリクエスト：200（一覧を返す）
     - 正常なリクエスト（落第者0）：200（空リストを返す）
-    - JSONが不正；400エラー（リクエストが不正です）
 
 【オプション】科目別ランキング：GET
 
@@ -43,8 +42,8 @@
 2. 科目に従って上位5名分のデータを返す。
 
     - 正常なリクエスト：200（5名分のその科目の結果を返す）
-    - JSONが不正；400エラー（リクエストが不正です）
-    - 科目が存在しない：400エラー（存在しない科目が指定されました）
+    - IDが不正：400エラー（科目IDが不正です）
+    - 科目が存在しない：404エラー（科目ID:**は存在しません）
 
 ## API仕様
 
@@ -94,7 +93,7 @@
 {}
 ```
 
-/api/performance <GET>
+/api/performance?student=1 <GET>
 ``` json
 {
   "name": "田中",
@@ -125,7 +124,7 @@
 ]
 ```
 
-/api/ranking <GET>
+/api/ranking?subject=1 <GET>
 ``` json
 {
   "subject": "数学",
@@ -139,3 +138,68 @@
 }
 ```
 
+## レスポンスボディ (異常系)
+
+/api/register <POST> / リクエスト不正
+``` json
+{
+  "error": "Bad Request",
+  "code": "INVALID_REQUEST"
+}
+```
+
+/api/register <POST> / 生徒が存在しない
+``` json
+{
+  "error": "Bad Request",
+  "code": "STUDENT_NOT_EXIST"
+}
+```
+
+/api/register <POST> / 科目が存在しない
+``` json
+{
+  "error": "Bad Request",
+  "code": "SUBJECT_NOT_EXIST"
+}
+```
+
+/api/register <POST> / 点数が範囲外
+``` json
+{
+  "error": "Bad Request",
+  "code": "SCORE_OUT_OF_RANGE"
+}
+``` 
+
+/api/performance?student=abc <GET> / 生徒ID不正
+``` json
+{
+  "error": "Bad Request",
+  "code": "INVALID_STUDENT_ID"
+}
+```
+
+/api/performance?student=999 <GET> / 生徒が存在しない
+``` json
+{
+  "error": "Not Found",
+  "code": "STUDENT_NOT_FOUND"
+}
+```
+
+/api/ranking?subject=abc <GET> / 科目が存在しない
+``` json
+{
+  "error": "Bad Request",
+  "code": "INVALID_SUBJECT_ID"
+}
+```
+
+/api/ranking?subject=999 <GET> / 科目が存在しない
+``` json
+{
+  "error": "Not Found",
+  "code": "SUBJECT_NOT_FOUND"
+}
+```
