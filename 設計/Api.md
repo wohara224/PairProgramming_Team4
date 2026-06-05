@@ -138,7 +138,7 @@
 }
 ```
 
-## レスポンスボディ (異常系)
+## レスポンスボディ (400)
 
 /api/register <POST> / リクエスト不正
 ``` json
@@ -180,19 +180,21 @@
 }
 ```
 
+/api/ranking?subject=abc <GET> / 科目ID不正
+``` json
+{
+  "error": "Bad Request",
+  "code": "INVALID_SUBJECT_ID"
+}
+```
+
+## レスポンスボディ (404)
+
 /api/performance?student=999 <GET> / 生徒が存在しない
 ``` json
 {
   "error": "Not Found",
   "code": "STUDENT_NOT_FOUND"
-}
-```
-
-/api/ranking?subject=abc <GET> / 科目が存在しない
-``` json
-{
-  "error": "Bad Request",
-  "code": "INVALID_SUBJECT_ID"
 }
 ```
 
