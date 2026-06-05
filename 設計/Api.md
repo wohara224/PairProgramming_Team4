@@ -100,21 +100,23 @@
 
 /api/dropout <GET>
 ``` json
-[
-  {
-    "name": "伊藤",
-    "subjects": [
-      { "name": "数学", "score": 42 },
-      { "name": "物理", "score": 38 }
-    ]
-  },
-  {
-    "name": "鈴木",
-    "subjects": [
-      { "name": "英語", "score": 56 }
-    ]
-  }
-]
+{
+  "dropoutStudents": [
+    {
+      "name": "伊藤",
+      "subjects": [
+        { "name": "数学", "score": 42 },
+        { "name": "物理", "score": 38 }
+      ]
+    },
+    {
+      "name": "鈴木",
+      "subjects": [
+        { "name": "英語", "score": 56 }
+      ]
+    }
+  ]
+}
 ```
 
 /api/ranking?subject=1 <GET>
