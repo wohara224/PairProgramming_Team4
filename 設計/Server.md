@@ -29,8 +29,8 @@ Nugetパッケージ
 ## リクエスト用DTO
 
 /api/register -> RegisterRequest
-- 生徒ID：Student (int)
-- 科目ID：Subject (int)
+- 生徒ID：StudentId (int)
+- 科目ID：SubjectId (int)
 - 点数：Score (int)
 
 ## レスポンス用DTO
