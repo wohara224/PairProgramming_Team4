@@ -27,6 +27,50 @@ Nugetパッケージ
 - 科目：Subject (Subject)
 - 点数：Score (int)
 
+## リクエスト用DTO
+
+/api/register：RegisterRequest
+
+- 生徒ID：Student (int)
+- 科目ID：Subject (int)
+- 点数：Score (int)
+
+## 200レスポンス用DTO
+
+/api/performance?student=1：PerformanceResponse
+
+- 生徒名：Name (string)
+- 成績リスト：Subjects (List<SubjectScore>)
+
+  - 科目成績：SubjectScore
+    - 科目名：Name (string)
+    - 点数：Score (int)
+
+/api/dropout:DropoutResponse
+
+/api/ranking?subject=1:RankingResponse
+
+## 400/404レスポンス用DTO
+
+エラー用オブジェクト：ErrorResponse
+
+- エラーの種類：Error (string)
+- エラーコード：Code (string)
+
+## 画面構成
+
+起動時
+
+``` bash
+========================================
+Server Starting ...
+Status Success
+========================================
+```
+
+
+
+
 ## ログ定義
 
 - System.*、Microsoft.*系は除外する
