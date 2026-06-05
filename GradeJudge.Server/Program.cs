@@ -1,33 +1,55 @@
-﻿using System.Net;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Hosting;
 
-HttpListener listener = new();
-listener.Prefixes.Add("http://+:50080/");
+using System.Net;
 
+// 多重起動の防止
+const string MutexName = @"Global\GradeJudgeUniqueUuidv7-019e983f-37e7-7eb9-9d03-d3d40b5b1894";
+
+using var mutex = new Mutex(false, MutexName, out bool isNewInstance);
+
+if (!isNewInstance)
+{
+    Console.WriteLine("アプリケーションはすでに起動しています。");
+    Environment.ExitCode = 1; // 異常終了
+    return;
+}
+
+// --- DIコンテナ ---
+var builder = Host.CreateApplicationBuilder(args);
+
+// サービスを登録
+using var app = builder.Build();
+
+// --- ロギングの設定 ---
+builder.Logging.ClearProviders();
+builder.UseNLog(); // ILoggerをNLog化する
+
+// --- アプリ実行部 ---
+var systemLogger = NLog.LogManager.GetCurrentClassLogger(); // NLog本体のロガー
 try
 {
-    listener.Start();
-    Console.WriteLine("サーバーを開設しました");
+    systemLogger.Info($"アプリケーション起動");
 
+    await app.RunAsync();
 
-    while (true)
-    {
-        HttpListenerContext context = await listener.GetContextAsync();
-
-        Console.WriteLine($"処理実行");
-        _ = Task.Run(() => ProcessRequest(context)); // 並列実行
-    }
+    Environment.ExitCode = 0; // 正常終了
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"エラー発生: {ex.Message}");
-    listener.Prefixes.Clear();
-    listener.Prefixes.Add("http://localhost:8080/");
-    listener.Start();
+    Environment.ExitCode = 1; // 異常終了
+    systemLogger.Fatal(ex, "実行中エラー発生");
 }
 finally
 {
-    listener.Close();
+    systemLogger.Info("アプリケーション終了 ExitCode={0}", Environment.ExitCode);
+
+    NLog.LogManager.Shutdown();
 }
+
+
+
 
 
 
