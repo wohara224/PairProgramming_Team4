@@ -41,8 +41,8 @@
 ## API仕様
 
 - 接続URL：http://xxx.xxx.xxx.xxx:50080
-- 成績登録：/api/register?student=*
-- 個人成績取得：/api/performance
+- 成績登録：/api/register
+- 個人成績取得：/api/performance?student=*
 - 落第者通知：/api/dropout
 - 科目別ランキング：/api/ranking?subject=*
 
