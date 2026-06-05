@@ -37,16 +37,26 @@ Nugetパッケージ
 
 ## 200レスポンス用DTO
 
+/api/register -> なし
+
 /api/performance?student=1：PerformanceResponse
 
 - 生徒名：Name (string)
 - 成績リスト：Subjects (List<SubjectScore>)
 
   - 科目成績：SubjectScore
+
     - 科目名：Name (string)
     - 点数：Score (int)
 
 /api/dropout:DropoutResponse
+
+- 落第者リスト：DropoutStudents (List<DropoutStudent>)
+
+  - 落第者の成績：DropoutStudent
+
+    - 名前：name (string)
+    - 落第科目:Subjects (List<SubjectScore>)
 
 /api/ranking?subject=1:RankingResponse
 
@@ -74,7 +84,7 @@ Nugetパッケージ
 
 ``` bash
 ========================================
-  Server : Succeed
+  Server : [ OK ] Started
   Port   : 50080  
 ========================================
 ```
@@ -83,7 +93,7 @@ Nugetパッケージ
 
 ``` bash
 ========================================
-  Server : Warning (localhost)
+  Server : [WARN] Local only
   Port   : 50080 
 ========================================
 ```
@@ -92,7 +102,7 @@ Nugetパッケージ
 
 ``` bash
 ========================================
-  Server : Failed
+  Server : [FAIL] Unavailable
   Port   : -
 ========================================
 ```
@@ -103,30 +113,69 @@ Nugetパッケージ
 
 ``` bash
 ========================================
-  Server : Succeed
+  Server : [ OK ] Started
   Port   : 50080  
 ========================================
-Wait for client request ...
+Wait for client request...
+
+
+
+
+
+- History -
+No connection logs found.
 ```
 
-通信確立、リクエスト判別
+通信確立 → 200 レスポンス送信
 
 ``` bash
 ========================================
-  Server : Succeed
+  Server : [ OK ] Started
   Port   : 50080  
 ========================================
-Connecting 
+Connected.
+Connection  : 192.168.100.24
+GET request : register
+HTTP Status : 200 OK
+Disconnected.
+
+- History -
+2026-06-05 16:18:18 192.168.100.24  register                200 OK
 ```
 
-通信確率
+通信確立 → 400 レスポンス送信
 
 ``` bash
 ========================================
-  Server : Succeed
+  Server : [ OK ] Started
   Port   : 50080  
 ========================================
-Connecting
+Connected.
+Connection  : 192.168.100.24
+GET request : register
+HTTP Status : 400 Bad Request
+Disconnected.
+
+- History -
+2026-06-05 19:23:45 192.168.100.24  register                400 Bad Request
+```
+
+1件以上通信履歴があるとき
+
+``` bash
+========================================
+  Server : [ OK ] Started
+  Port   : 50080  
+========================================
+Wait for client request...
+
+
+
+
+
+- History -
+2026-06-05 16:18:18 192.168.100.24  register                200 OK
+2026-06-05 16:18:26 192.168.100.24  performance?student=2   404 Not Found
 ```
 
 ## ログ定義
@@ -137,16 +186,15 @@ Connecting
 
 通信ログ
 ``` text:api-20260605.log
-2026-06-05 16:18:28.972|Info|GradeJudge.Server.Api.ResponseCreator|Listener起動を試行
-2026-06-05 16:18:29.123|Info|GradeJudge.Server.Api.ResponseCreator|PORT:12380でListener起動を試行
+2026-06-05 16:18:29.123|Info|GradeJudge.Server.Api.ResponseCreator|Listener起動 PORT:12380
 2026-06-05 16:18:29.349|Error|GradeJudge.Server.Api.ResponseCreator|エラー: アクセスが拒否されました。
-2026-06-05 16:18:29.443|Info|GradeJudge.Server.Api.ResponseCreator|Listenerを終了
-2026-06-05 16:29:48.333|Info|GradeJudge.Server.Api.ResponseCreator|PORT:50080でListener起動を試行
-2026-06-05 16:29:48.587|Info|GradeJudge.Server.Api.ResponseCreator|Listener起動
-2026-06-05 16:30:28.912|Info|GradeJudge.Server.Api.ResponseCreator|通信確立
-2026-06-05 16:30:29.123|Info|GradeJudge.Server.Api.ResponseCreator|GETリクエスト受信
+2026-06-05 16:18:29.443|Info|GradeJudge.Server.Api.ResponseCreator|Listener終了
+2026-06-05 16:29:48.333|Info|GradeJudge.Server.Api.ResponseCreator|Listener起動 PORT:50080
+2026-06-05 16:29:48.587|Info|GradeJudge.Server.Api.ResponseCreator|Listener起動完了
+2026-06-05 16:30:28.912|Info|GradeJudge.Server.Api.ResponseCreator|通信確立 192.168.100.24
+2026-06-05 16:30:29.123|Info|GradeJudge.Server.Api.ResponseCreator|GETリクエスト受信 register
 2026-06-05 16:30:29.578|Warn|GradeJudge.Server.Api.ResponseCreator|リクエスト不正: 生徒ID:999は存在しません。
-2026-06-05 16:30:29.843|Info|GradeJudge.Server.Api.ResponseCreator|レスポンス送信
+2026-06-05 16:30:29.843|Info|GradeJudge.Server.Api.ResponseCreator|レスポンス送信 400 Bad Request
 ```
 
 システムログ
