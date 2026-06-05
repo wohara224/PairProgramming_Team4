@@ -49,10 +49,64 @@
 ## API仕様
 
 接続URL：http://xxx.xxx.xxx.xxx:50080
+
 成績登録<POST>：/api/register
+
 個人成績取得<GET>：/api/performance
+
 落第者通知<GET>：/api/dropout
+
 科目別ランキング<GET>：/api/ranking
 
 ## レスポンスボディ
+
+/api/register
+``` json
+{}
+```
+
+/api/performance
+``` json
+{
+  "name": "田中",
+  "subjects": [
+    { "name": "数学", "score": 94 },
+    { "name": "英語", "score": 47 },
+    { "name": "物理", "score": 83 }
+  ]
+}
+```
+
+/api/dropout
+``` json
+[
+  {
+    "name": "伊藤",
+    "subjects": [
+      { "name": "数学", "score": 42 },
+      { "name": "物理", "score": 38 }
+    ]
+  },
+  {
+    "name": "鈴木",
+    "subjects": [
+      { "name": "英語", "score": 56 }
+    ]
+  }
+]
+```
+
+/api/ranking
+``` json
+{
+  "subject": "数学",
+  "students": [
+    { "name": "山本", "score": 98 },
+    { "name": "田中", "score": 94 },
+    { "name": "柏", "score": 93 },
+    { "name": "宇田", "score": 89 },
+    { "name": "藤田", "score": 87 }
+  ]
+}
+```
 
