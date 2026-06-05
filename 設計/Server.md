@@ -33,7 +33,7 @@ Nugetパッケージ
 - 科目ID：Subject (int)
 - 点数：Score (int)
 
-## 200レスポンス用DTO
+## レスポンス用DTO
 
 /api/register -> なし
 
@@ -57,9 +57,7 @@ Nugetパッケージ
     - 名前：Name (string)
     - 点数：Score (int)
 
-## 400/404レスポンス用DTO
-
-エラー用オブジェクト -> ErrorResponse
+汎用エラーオブジェクト -> ErrorResponse
 - エラーの種類：Error (string)
 - エラーコード：Code (string)
 
