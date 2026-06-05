@@ -171,6 +171,15 @@
   "code": "INVALID_SUBJECT_ID"
 }
 ```
+## レスポンスボディ (403)
+
+URIが上記以外のもの
+``` json
+{
+  "error": "Forbidden",
+  "code": "NO_PERMISSION"
+}
+```
 
 ## レスポンスボディ (404)
 
