@@ -29,7 +29,6 @@ Nugetパッケージ
 ## リクエスト用DTO
 
 /api/register -> RegisterRequest
-<RegisterRequest>
 - 生徒ID：Student <int>
 - 科目ID：Subject <int>
 - 点数：Score <int>
@@ -39,7 +38,6 @@ Nugetパッケージ
 /api/register -> なし
 
 /api/performance?student=1 -> PerformanceResponse
-<PerformanceResponse>
 - 生徒名：Name <string>
 - 成績リスト：Subjects <List<SubjectScore>>
   - <SubjectScore>
@@ -47,14 +45,12 @@ Nugetパッケージ
     - 点数：Score <int>
 
 /api/dropout -> DropoutResponse
-<DropoutResponse>
 - 落第者リスト：DropoutStudents <List<DropoutStudent>>
   - <DropoutStudent>
     - 名前：Name <string>
     - 落第科目：Subjects <List<SubjectScore>>
 
 /api/ranking?subject=1 -> RankingResponse
-<RankingResponse>
 - 科目名:Subject <string>
 - 生徒リスト：Students <List<StudentScore>>
   - <StudentScore>
