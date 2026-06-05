@@ -49,7 +49,7 @@
 
 接続URL：http://xxx.xxx.xxx.xxx:50080
 
-成績登録<POST>：/api/register?id=*
+成績登録<POST>：/api/register?student=*
 
 個人成績取得<GET>：/api/performance
 
