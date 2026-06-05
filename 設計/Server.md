@@ -11,56 +11,55 @@ Nugetパッケージ
 
 科目：Subject
 
-- 科目番号：Id <int>
-- 名前：Name <string>
+- 科目番号：Id (int)
+- 名前：Name (string)
 
 生徒：Student
 
-- 生徒番号：Id <int>
-- 名前：Name <string>
+- 生徒番号：Id (int)
+- 名前：Name (string)
 
 成績：TestResult
 
-- 管理番号：Id <int>
-- 生徒：StudentInfo <Student>
-- 科目：Subject <Subject>
-- 点数：Score <int>
+- 管理番号：Id (int)
+- 生徒：StudentInfo (Student)
+- 科目：Subject (Subject)
+- 点数：Score (int)
 
 ## リクエスト用DTO
 
 /api/register -> RegisterRequest
-- 生徒ID：Student <int>
-- 科目ID：Subject <int>
-- 点数：Score <int>
+- 生徒ID：Student (int)
+- 科目ID：Subject (int)
+- 点数：Score (int)
 
 ## 200レスポンス用DTO
 
 /api/register -> なし
 
 /api/performance?student=1 -> PerformanceResponse
-- 生徒名：Name <string>
-- 成績リスト：Subjects <List<SubjectScore>>
-  - <SubjectScore>
-    - 科目名：Name <string>
-    - 点数：Score <int>
+- 生徒名：Name (string)
+- 成績リスト：Subjects (List:SubjectScore)
+  - SubjectScore
+    - 科目名：Name (string)
+    - 点数：Score (int)
 
 /api/dropout -> DropoutResponse
-- 落第者リスト：DropoutStudents <List<DropoutStudent>>
-  - <DropoutStudent>
-    - 名前：Name <string>
+- 落第者リスト：DropoutStudents (List:DropoutStudent)
+  - DropoutStudent
+    - 名前：Name (string)
     - 落第科目：Subjects <List<SubjectScore>>
 
 /api/ranking?subject=1 -> RankingResponse
-- 科目名:Subject <string>
-- 生徒リスト：Students <List<StudentScore>>
-  - <StudentScore>
-    - 名前：Name <string>
-    - 点数：Score <int>
+- 科目名:Subject (string)
+- 生徒リスト：Students (List:StudentScore)
+  - StudentScore
+    - 名前：Name (string)
+    - 点数：Score (int)
 
 ## 400/404レスポンス用DTO
 
-エラー用オブジェクト：ErrorResponse
-
+エラー用オブジェクト -> ErrorResponse
 - エラーの種類：Error (string)
 - エラーコード：Code (string)
 
