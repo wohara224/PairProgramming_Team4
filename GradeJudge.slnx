@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="GradeJudge.Client/GradeJudge.Client.csproj" />
+  <Project Path="GradeJudge.Server/GradeJudge.Server.csproj" />
+</Solution>

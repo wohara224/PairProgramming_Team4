@@ -1,0 +1,5 @@
+/.vs
+/GradeJudge.Client/obj
+/GradeJudge.Server/obj
+/GradeJudge.Client/bin
+/GradeJudge.Server/bin
