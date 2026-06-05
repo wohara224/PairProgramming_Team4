@@ -61,14 +61,7 @@
 
 /api/register <POST>
 ``` json
-{
-  "studentId": 1,
-  "subjects" : [
-    { "subjectId": 1, "score": 94 },
-    { "subjectId": 2, "score": 47 },
-    { "subjectId": 3, "score": 83 }
-  ]
-}
+{ "student": 1, "subject": 1, "score": 94 }
 ```
 
 /api/performance?student=1 <GET>
