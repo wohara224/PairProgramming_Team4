@@ -12,7 +12,7 @@ namespace GradeJudge.Client.Model
         public int Score { get; set; }
     }
     // 科目ごとの生徒ランキング
-    public class SubjectGrades
+    public class SubjectGrade
     {
         public string Name { get; set; }
         public List<Student> Students { get; set; }
