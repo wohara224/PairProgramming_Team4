@@ -10,7 +10,8 @@ using GradeJudge.Client.Model;
 public class Program
 {
     static HttpClient client = new();
-    static string deviceUrl = "http://172.16.7.10:50080/"; // サーバーURL
+    //static string deviceUrl = "http://172.16.7.10:50080/"; // サーバーURL
+    static string deviceUrl = "http://localhost:50080/";
 
     // 画面の列挙
     enum Grades
@@ -90,22 +91,23 @@ public class Program
 
             if(studentId == null)
             {
-                return Grades.ViewGrades;
+                return Grades.Title;
             }
 
             // API通信と表示
-            try
+            var response = await client.GetAsync($"{deviceUrl}/api/performance?student={studentId}");
+
+            Console.SetCursorPosition(0, 1);
+            for (int i = 0; i < 10; i++)
             {
-                var student = await client.GetFromJsonAsync<StudentGrade>($"{deviceUrl}/api/performance?student={studentId}");
+                Console.WriteLine(new string(' ', Console.WindowWidth));
+            }
+            Console.SetCursorPosition(0, 3);
 
-                Console.SetCursorPosition(0, 2);
-                for (int i = 0; i < 10; i++)
-                {
-                    Console.WriteLine("");
-                }
-                Console.SetCursorPosition(0, 3);
+            if (response.IsSuccessStatusCode)
+            {
+                var student = await response.Content.ReadFromJsonAsync<StudentGrade>();
 
-                Console.WriteLine("");
                 Console.WriteLine($"名前：{student.Name,5}");
                 Console.WriteLine("----------------------------------");
                 foreach (var subject in student.Subjects)
@@ -113,13 +115,23 @@ public class Program
                     Console.WriteLine($"{subject.Name,5}:{subject.Score,4}点");
                 }
             }
-            catch (Exception ex)
+            else
             {
+                var error = await response.Content.ReadFromJsonAsync<ApiError>();
 
+                if (error?.Code == "INVALID_STUDENT_ID")
+                {
+                    Console.WriteLine("生徒IDが不正です");
+                }
+                else if(error?.Code == "STUDENT_NOT_FOUND")
+                {
+                    Console.WriteLine("生徒が存在しません");
+                }
+                else if (error?.Code == "NO_PERMISSION")
+                {
+                    Console.WriteLine("アクセス失敗");
+                }
             }
-            
-
-            
 
             Console.SetCursorPosition(0, 0);
         }
@@ -130,22 +142,141 @@ public class Program
     static async Task<Grades> AddScene()
     {
         Console.Clear();
+        while (true)
+        {
+            Console.WriteLine("Esc：戻る");
+            Console.WriteLine("");
 
+            Console.Write("生徒ID＞");
+            string? studentId = Input();
+            if(studentId == null)
+            {
+                return Grades.Title;
+            }
 
+            Console.Write("科目ID＞");
+            string? subjectId = Input();
+            if (subjectId == null)
+            {
+                return Grades.ViewGrades;
+            }
 
-        return Grades.Title;
+            Console.Write("点数＞");
+            string? score = Input();
+            if (score == null)
+            {
+                return Grades.ViewGrades;
+            }
+
+            Console.SetCursorPosition(0, 0);
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine(new string(' ', Console.WindowWidth));
+            }
+            Console.SetCursorPosition(0, 6);
+
+            // API通信と表示
+
+            var request = new AddData
+            {
+                StudentId = int.Parse(studentId),
+                SubjectId = int.Parse(subjectId),
+                Score = int.Parse(score)
+            };
+            
+            var response = await client.PostAsJsonAsync($"{deviceUrl}/api/register", request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("成績の登録に成功しました");
+            }
+            else
+            {
+                var error = await response.Content.ReadFromJsonAsync<ApiError>();
+
+                if (error?.Code == "INVALID_REQUEST")
+                {
+                    Console.WriteLine("リクエストが不正です");
+                }
+                else if (error?.Code == "STUDENT_NOT_EXIST")
+                {
+                    Console.WriteLine("生徒が存在しません");
+                }
+                else if (error?.Code == "SUBJECT_NOT_EXIST")
+                {
+                    Console.WriteLine("科目が存在しません");
+                }
+                else if (error?.Code == "SCORE_OUT_OF_RANGE")
+                {
+                    Console.WriteLine("点数が範囲外です");
+                }
+                else if (error?.Code == "NO_PERMISSION")
+                {
+                    Console.WriteLine("アクセス失敗");
+                }
+            }
+
+            Console.SetCursorPosition(0, 0);
+        }
     }
 
     // 成績ランキング画面
     static async Task<Grades> RankingScene()
     {
         Console.Clear();
+        while (true)
+        {
+            Console.WriteLine("科目ID入力　Esc：戻る");
+            Console.Write("＞");
 
-        //Console.WriteLine("0：戻る 1：閲覧 2：登録");
-        //Console.Write("操作入力＞");
-        //string? command = Console.ReadLine();
-        Thread.Sleep(300);
-        return Grades.Title;
+            string? subjectId = Input(); // ID入力
+
+            if (subjectId == null)
+            {
+                return Grades.Title;
+            }
+
+            // API通信と表示
+            var response = await client.GetAsync($"{deviceUrl}/api/ranking?subject={subjectId}");
+
+            Console.SetCursorPosition(0, 1);
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine(new string(' ', Console.WindowWidth));
+            }
+            Console.SetCursorPosition(0, 3);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var subject = await response.Content.ReadFromJsonAsync<SubjectGrade>();
+
+                Console.WriteLine($"名前：{subject.Name,5}");
+                Console.WriteLine("----------------------------------");
+                foreach (var student in subject.Students)
+                {
+                    Console.WriteLine($"{student.Name,5}:{student.Score,4}点");
+                }
+            }
+            else
+            {
+                var error = await response.Content.ReadFromJsonAsync<ApiError>();
+
+                if (error?.Code == "INVALID_SUBJECT_ID")
+                {
+                    Console.WriteLine("科目IDが不正です");
+                }
+                else if (error?.Code == "SUBJECT_NOT_FOUND")
+                {
+                    Console.WriteLine("科目が存在しません");
+                }
+                else if (error?.Code == "NO_PERMISSION")
+                {
+                    Console.WriteLine("アクセス失敗");
+                }
+            }
+
+            Console.SetCursorPosition(0, 0);
+        }
     }
 
     static string? Input()
@@ -163,6 +294,7 @@ public class Program
 
             if (key.Key == ConsoleKey.Enter)
             {
+                Console.WriteLine();
                 return input;
             }
 
@@ -184,6 +316,7 @@ public class Program
             }
         }
     }
+
 }
 
 
