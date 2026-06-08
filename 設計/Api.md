@@ -34,10 +34,10 @@
 
 ## API仕様
 
-- 接続URL：http://xxx.xxx.xxx.xxx:8080
-- 成績登録：/api/register
-- 個人別スコア取得：/api/scores?id=*
-- 科目別ランキング取得：/api/ranking?id=*
+- 接続URL：http://xxx.xxx.xxx.xxx:8080/api
+- 成績登録：/register
+- 個人別スコア取得：/scores?id=*
+- 科目別ランキング取得：/ranking?id=*
 
 ## リクエストボディ
 
