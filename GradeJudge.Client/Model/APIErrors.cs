@@ -4,8 +4,13 @@ using System.Text;
 
 namespace GradeJudge.Client.Model
 {
-    public class ApiError
+    public class Error
     {
         public string Message { get; set; } = "";
+    }
+
+    public class ApiError
+    {
+        public List<Error> Errors { get; set; } = [];
     }
 }
