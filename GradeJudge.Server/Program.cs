@@ -134,7 +134,7 @@ try
         string? method = request.HttpMethod;
         HttpStatusCode statusCode = HttpStatusCode.OK;
 
-        apiLogger.Info("リクエスト受信：API={0}{1} Method={2}", path, query, method);
+        apiLogger.Info("リクエスト受信：IP={0} PATH={1}{2} Method={3}", remoteIp, path, query, method);
         switch (path)
         {
             case "/api/register":
@@ -319,7 +319,7 @@ try
                 {
                     /* レスポンス生成・送信 */
                     statusCode = HttpStatusCode.NotFound;
-                    SendErrorResponse(response, statusCode, ["STUDENT_NOT_FOUND"]);
+                    SendErrorResponse(response, statusCode, ["SUBJECT_NOT_FOUND"]);
 
                     /* 通信ログ：生徒ID不正 */
                     apiLogger.Warn("リクエスト異常：生徒ID不正 ID={0}", subjectId);
@@ -332,6 +332,9 @@ try
                     byte[] jsonResponse = JsonSerializer.SerializeToUtf8Bytes(subjectScores, writeOptions);
                     SendResponse(response, statusCode, jsonResponse);
                 }
+
+                /* 通信ログ：正常 */
+                apiLogger.Info("リクエスト正常");
 
                 break;
             default:
@@ -422,9 +425,6 @@ void SendErrorResponse(
     {
         // ボディ無しで送信
         SendResponse(response, code);
-
-        /* 通信ログ：送信 */
-        apiLogger.Info("レスポンス送信：Status={0}", (int)code);
 
         return;
     }
