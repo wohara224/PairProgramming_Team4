@@ -14,13 +14,14 @@ using System.Text.Json.Serialization;
 // リポジトリ
 IGradeRepository gradeRepository = new GradeRepository();
 
-// ブラウザでJSONを確認しやすくする設定（Unicode表記から日本語そのまま表記へ）
+// JSON書き込み時の設定
 var writeOptions = new JsonSerializerOptions
 {
-    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // Unicode表記から日本語そのままにする
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase // キャメルケースに変換
 };
 
-// 厳密な型チェックを要求
+// JSON読み取り時の設定
 var readOptions = new JsonSerializerOptions
 {
     PropertyNameCaseInsensitive = true,
@@ -172,7 +173,7 @@ try
 
                     /* レスポンス生成・送信 */
                     statusCode = HttpStatusCode.BadRequest;
-                    SendErrorResponse(response, statusCode, "INVALID_REQUEST");
+                    SendErrorResponse(response, statusCode, ["INVALID_REQUEST"]);
 
                     /* 通信ログ：リクエスト異常 */
                     apiLogger.Warn("リクエスト異常：ErrorJson={0}", json);
@@ -217,7 +218,7 @@ try
 
                     /* レスポンス生成・送信 */
                     statusCode = HttpStatusCode.BadRequest;
-                    SendMultiErrorResponse(response, statusCode, [.. errorMessages]);
+                    SendErrorResponse(response, statusCode, [.. errorMessages]);
 
                     break;
                 }
@@ -230,8 +231,8 @@ try
                 apiLogger.Info("リクエスト正常");
 
                 break;
-            case "/api/performance":
-                /* 個人成績取得 */
+            case "/api/scores/student":
+                /* 個人別スコア取得 */
 
                 // GETじゃない場合
                 if (!string.Equals(method, "GET"))
@@ -246,12 +247,12 @@ try
                     break;
                 }
 
-                // studentクエリがない、数値変換できない場合
+                // idクエリがない、数値変換できない場合
                 if (!int.TryParse(request.QueryString["id"], out int studentId))
                 {
                     /* レスポンス生成・送信 */
                     statusCode = HttpStatusCode.BadRequest;
-                    SendErrorResponse(response, statusCode, "INVALID_REQUEST");
+                    SendErrorResponse(response, statusCode, ["INVALID_REQUEST"]);
 
                     /* 通信ログ：クエリ不正 */
                     apiLogger.Warn("リクエスト異常：クエリ不正 Query={0}", query);
@@ -259,13 +260,13 @@ try
                     break;
                 }
 
-                // データ取得 => IDなしならNotFound
-                var performance = gradeRepository.GetPersonalPerformance(studentId);
-                if (performance is null)
+                // データ取得 => データ取得できない場合NotFound
+                var studentScores = gradeRepository.GetStudentScores(studentId);
+                if (studentScores is null)
                 {
                     /* レスポンス生成・送信 */
                     statusCode = HttpStatusCode.NotFound;
-                    SendErrorResponse(response, statusCode, "STUDENT_NOT_FOUND");
+                    SendErrorResponse(response, statusCode, ["STUDENT_NOT_FOUND"]);
 
                     /* 通信ログ：生徒ID不正 */
                     apiLogger.Warn("リクエスト異常：生徒ID不正 ID={0}", studentId);
@@ -274,45 +275,71 @@ try
                 }
 
                 /* レスポンス生成・送信 */
-                byte[] jsonResponse = JsonSerializer.SerializeToUtf8Bytes(performance, writeOptions);
-                SendResponse(response, statusCode, jsonResponse);
+                {
+                    byte[] jsonResponse = JsonSerializer.SerializeToUtf8Bytes(studentScores, writeOptions);
+                    SendResponse(response, statusCode, jsonResponse);
+                }
 
                 /* 通信ログ：正常 */
                 apiLogger.Info("リクエスト正常");
 
                 break;
-            //case "/api/dropout":
-            //    /* 落第者リスト取得 */
+            case "/api/scores/subject":
+                /* 科目別成績リスト取得 */
 
-            //    // GETじゃない場合
-            //    if (!string.Equals(method, "GET"))
-            //    {
-            //        statusCode = HttpStatusCode.MethodNotAllowed;
-            //        apiLogger.Warn("リクエスト異常：不許可メソッドを受信");
-            //        SendErrorResponse(response, statusCode);
-            //        break;
-            //    }
+                // GETじゃない場合
+                if (!string.Equals(method, "GET"))
+                {
+                    /* レスポンス生成・送信 */
+                    statusCode = HttpStatusCode.MethodNotAllowed;
+                    SendErrorResponse(response, statusCode);
 
-            //    break;
-            //case "/api/ranking":
-            //    /* 落第者リスト取得 */
+                    /* 通信ログ：リクエスト異常 */
+                    apiLogger.Warn("リクエスト異常：不許可メソッドを受信");
 
-            //    // GETじゃない場合
-            //    if (!string.Equals(method, "GET"))
-            //    {
-            //        statusCode = HttpStatusCode.MethodNotAllowed;
-            //        apiLogger.Warn("リクエスト異常：不許可メソッドを受信");
-            //        SendErrorResponse(response, statusCode);
-            //        break;
-            //    }
+                    break;
+                }
 
-            //    break;
+                // idクエリがない、数値変換できない場合
+                if (!int.TryParse(request.QueryString["id"], out int subjectId))
+                {
+                    /* レスポンス生成・送信 */
+                    statusCode = HttpStatusCode.BadRequest;
+                    SendErrorResponse(response, statusCode, ["INVALID_REQUEST"]);
+
+                    /* 通信ログ：クエリ不正 */
+                    apiLogger.Warn("リクエスト異常：クエリ不正 Query={0}", query);
+
+                    break;
+                }
+
+                // データ取得 => データ取得できない場合NotFound
+                var subjectScores = gradeRepository.GetSubjectScores(subjectId);
+                if (subjectScores is null)
+                {
+                    /* レスポンス生成・送信 */
+                    statusCode = HttpStatusCode.NotFound;
+                    SendErrorResponse(response, statusCode, ["STUDENT_NOT_FOUND"]);
+
+                    /* 通信ログ：生徒ID不正 */
+                    apiLogger.Warn("リクエスト異常：生徒ID不正 ID={0}", subjectId);
+
+                    break;
+                }
+
+                /* レスポンス生成・送信 */
+                {
+                    byte[] jsonResponse = JsonSerializer.SerializeToUtf8Bytes(subjectScores, writeOptions);
+                    SendResponse(response, statusCode, jsonResponse);
+                }
+
+                break;
             default:
                 /* 指定外URLへのアクセス */
 
                 /* レスポンス生成・送信 */
-                statusCode = HttpStatusCode.MethodNotAllowed;
-                SendErrorResponse(response, statusCode, "NO_PERMISSION");
+                statusCode = HttpStatusCode.NotFound;
+                SendErrorResponse(response, statusCode);
 
                 /* 通信ログ：リクエスト異常 */
                 apiLogger.Warn("リクエスト異常：URL不正");
@@ -338,15 +365,6 @@ catch (Exception ex) when (
     && token.IsCancellationRequested)
 {
     /* キャンセル入力：正常終了扱い */
-}
-catch (Exception ex)
-{
-    /* その他のエラー */
-    Environment.ExitCode = 1;
-    Console.WriteLine($"エラー発生：{ex.Message}");
-
-    /* システムログ：エラー発生 */
-    sysLogger.Fatal(ex, "エラー発生");
 }
 finally
 {
@@ -397,9 +415,10 @@ static void SendResponse(
 void SendErrorResponse(
     HttpListenerResponse response,
     HttpStatusCode code,
-    string? message = null)
+    string[]? message = null)
 {
-    if(message is null)
+    // メッセージがnullまたはリスト0件のとき
+    if(message is null or { Length:0 })
     {
         // ボディ無しで送信
         SendResponse(response, code);
@@ -411,30 +430,9 @@ void SendErrorResponse(
     }
 
     // Jsonの作成
-    var error = new ErrorResponse(code.ToString(), message);
-    var jsonResponse = JsonSerializer.SerializeToUtf8Bytes(error, writeOptions);
-    
-    // レスポンス送信処理
-    SendResponse(response, code, jsonResponse);
-}
-
-// 共通のエラー処理（エラー配列）
-void SendMultiErrorResponse(
-    HttpListenerResponse response,
-    HttpStatusCode code,
-    string[] messages)
-{
-    // messagesのガード
-    if (messages is null || messages.Length == 0)
-    {
-        SendErrorResponse(response, code);
-        return;
-    }
-
-    // Jsonの作成
-    var errors = messages.Select(x => new ErrorResponse(code.ToString(), x));
+    var errors = new ErrorResponse([.. message.Select(x => new ErrorItem(x))]);
     var jsonResponse = JsonSerializer.SerializeToUtf8Bytes(errors, writeOptions);
-
+    
     // レスポンス送信処理
     SendResponse(response, code, jsonResponse);
 }
