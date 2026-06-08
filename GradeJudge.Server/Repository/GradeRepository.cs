@@ -178,8 +178,8 @@ internal class GradeRepository : IGradeRepository
         }
     }
 
-    // 個人成績取得
-    public PerformanceResponse? GetPersonalPerformance(int id)
+    // 個人別スコア取得
+    public StudentScoresResponse? GetStudentScores(int id)
     {
         // 指定IDの生徒は存在するか？
         var target = _testStudents.FirstOrDefault(x => x.Id == id);
@@ -188,12 +188,27 @@ internal class GradeRepository : IGradeRepository
             return null;
         }
 
-        var scores =
-            _results
-                .Where(x => x.Student == target) // 指定生徒に絞った成績リスト
-                .Select(x=>new SubjectScore(x.Subject.Name, x.Score)); // 科目別成績に加工
+        var scores = _results
+            .Where(x => x.Student == target) // 指定生徒に絞った成績リスト
+            .Select(x => new SubjectScore(x.Subject.Name, x.Score)); // 科目別成績に加工
 
-        // 成績0件なら空リストを返す（nullではない）
+        return new(target.Name, [.. scores]);
+    }
+
+    // 科目別成績リスト取得
+    public SubjectScoresResponse? GetSubjectScores(int id)
+    {
+        // 指定科目は存在するか？
+        var target = _testSubjects.FirstOrDefault(x => x.Id == id);
+        if(target is null)
+        {
+            return null;
+        }
+
+        var scores = _results
+            .Where(x => x.Subject == target) // 指定科目に絞った成績リスト
+            .Select(x => new StudentScore(x.Student.Name, x.Score)); // 生徒別成績に加工
+
         return new(target.Name, [.. scores]);
     }
 }

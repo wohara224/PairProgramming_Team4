@@ -2,17 +2,14 @@
 
 // === レスポンス本体 ===
 
-// 個人成績
-public record PerformanceResponse(string Name, List<SubjectScore> Subjects);
+// 個人別スコア
+public record StudentScoresResponse(string Name, List<SubjectScore> Subjects);
 
-// 落第者
-public record DropoutResponse(List<DropoutStudent> DropoutStudents);
-
-// ランキング
-public record RankingResponse(string Subject, List<StudentScore> Students);
+// 科目別成績リスト
+public record SubjectScoresResponse(string Name, List<StudentScore> Students);
 
 // 汎用エラー
-public record ErrorResponse(string Error, string Code);
+public record ErrorResponse(List<ErrorItem> Errors);
 
 
 // === 内部レコード ===
@@ -20,8 +17,8 @@ public record ErrorResponse(string Error, string Code);
 // 科目ごとの点数
 public record SubjectScore(string Name, int Score);
 
-// 落第者の指定科目における成績
-public record DropoutStudent(string Name, List<SubjectScore> Subjects);
-
 // 指定科目における生徒の成績
 public record StudentScore(string Name, int Score);
+
+// エラーメッセージの本体
+public record ErrorItem(string Message);
