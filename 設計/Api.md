@@ -92,7 +92,7 @@
 /scores/subject?id=1
 ``` json
 {
-  "subject": "数学",
+  "name": "数学",
   "students": [
     { "name": "山本", "score": 98 },
     { "name": "田中", "score": 94 },
