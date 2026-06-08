@@ -1,4 +1,4 @@
-﻿namespace GradeJudge.Server.Domain.Dto;
+﻿namespace GradeJudge.Server.Model;
 
 // === リクエスト本体 ===
 
