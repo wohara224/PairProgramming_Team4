@@ -34,14 +34,14 @@
 
 - 接続URL：http://xxx.xxx.xxx.xxx:8080/api
 - 成績登録：/register
-- 個人別スコア取得：/scores?id=*
-- 科目別成績リスト取得：/ranking?id=*
+- 個人別スコア取得：/scores/student?id=*
+- 科目別成績リスト取得：/scores/subject?id=*
 
 ## リクエストボディ
 
 成績登録
 
-[POST] /api/register
+[POST] /register
 ``` json
 {
   "studentId": 1,
@@ -52,14 +52,14 @@
 
 個人別スコア取得
 
-[GET] /api/scores?id=1
+[GET] /scores/student?id=1
 ``` json
 {}
 ```
 
 科目別成績リスト取得
 
-[GET] /api/ranking?id=1
+[GET] /scores/subject?id=1
 ``` json
 {}
 ```
@@ -68,14 +68,14 @@
 
 成績登録
 
-/api/register
+/register
 ``` json
 {}
 ```
 
 個人別スコア取得
 
-/api/scores?id=1
+/scores/student?id=1
 ``` json
 {
   "name": "田中",
@@ -89,7 +89,7 @@
 
 科目別成績リスト取得
 
-/api/ranking?id=1
+/scores/subject?id=1
 ``` json
 {
   "subject": "数学",
@@ -107,12 +107,12 @@
 
 成績登録
 
-/api/register / POST以外のメソッドを受信した（405）
+/register / POST以外のメソッドを受信した（405）
 ``` json
 {}
 ```
 
-/api/register / JSONがおかしい、変換できない（400）
+/register / JSONがおかしい、変換できない（400）
 ``` json
 {
   "errors": [
@@ -121,7 +121,7 @@
 }
 ```
 
-/api/register / 生徒が存在しない（400）
+/register / 生徒が存在しない（400）
 ``` json
 {
   "errors": [
@@ -130,7 +130,7 @@
 }
 ```
 
-/api/register / 科目が存在しない（400）
+/register / 科目が存在しない（400）
 ``` json
 {
   "errors": [
@@ -139,7 +139,7 @@
 }
 ```
 
-/api/register / 点数が範囲外（400）
+/register / 点数が範囲外（400）
 ``` json
 {
   "errors": [
@@ -148,7 +148,7 @@
 }
 ```
 
-/api/register / パラメータ値異常の複合（400）
+/register / パラメータ値異常の複合（400）
 ``` json
 {
   "errors": [
@@ -160,12 +160,12 @@
 
 個人別スコア取得
 
-/api/scores?id=1 / GET以外のメソッドを受信した（405）
+/scores/student?id=1 / GET以外のメソッドを受信した（405）
 ``` json
 {}
 ```
 
-/api/scores?id=abc / クエリがない、またはID数値変換失敗（400）
+/scores/student?id=abc / クエリがない、またはID数値変換失敗（400）
 ``` json
 {
   "errors": [
@@ -174,7 +174,7 @@
 }
 ```
 
-/api/scores?id=999 / 生徒が存在しない（404）
+/scores/student?id=999 / 生徒が存在しない（404）
 ``` json
 {
   "errors": [
@@ -185,12 +185,12 @@
 
 科目別成績リスト取得
 
-/api/ranking?id=1 / GET以外のメソッドを受信した（405）
+/scores/subject?id=1 / GET以外のメソッドを受信した（405）
 ``` json
 {}
 ```
 
-/api/ranking?id=abc / クエリがない、またはID数値変換失敗（400）
+/scores/subject?id=abc / クエリがない、またはID数値変換失敗（400）
 ``` json
 {
   "errors": [
@@ -199,7 +199,7 @@
 }
 ```
 
-/api/ranking?id=999 / 科目が存在しない（404）
+/scores/subject?id=999 / 科目が存在しない（404）
 ``` json
 {
   "errors": [
