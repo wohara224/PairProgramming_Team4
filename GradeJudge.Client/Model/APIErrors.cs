@@ -6,7 +6,6 @@ namespace GradeJudge.Client.Model
 {
     public class ApiError
     {
-        public string Error { get; set; } = "";
-        public string Code { get; set; } = "";
+        public string Message { get; set; } = "";
     }
 }
