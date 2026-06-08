@@ -34,7 +34,7 @@
 
 ## API仕様
 
-- 接続URL：http://xxx.xxx.xxx.xxx:5080
+- 接続URL：http://xxx.xxx.xxx.xxx:8080
 - 成績登録：/api/register
 - 個人別スコア取得：/api/scores?id=*
 - 科目別ランキング取得：/api/ranking?id=*
