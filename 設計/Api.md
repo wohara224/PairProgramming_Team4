@@ -50,32 +50,31 @@
 
 [POST] /api/register
 ``` json
-{ "studentId": 1, "subjectId": 1, "score": 94 }
+{
+  "studentId": 1,
+  "subjectId": 1,
+  "score": 94
+}
 ```
 
-[GET] /api/performance?student=1
+[GET] /api/scores?id=1
 ``` json
 {}
 ```
 
-[GET] /api/dropout
+[GET] /api/ranking?id=1
 ``` json
 {}
 ```
 
-[GET] /api/ranking?subject=1
-``` json
-{}
-```
-
-## レスポンスボディ (200)
+## レスポンスボディ (正常系)
 
 /api/register
 ``` json
 {}
 ```
 
-/api/performance?student=1
+/api/scores?id=1
 ``` json
 {
   "name": "田中",
@@ -87,28 +86,7 @@
 }
 ```
 
-/api/dropout
-``` json
-{
-  "dropoutStudents": [
-    {
-      "name": "伊藤",
-      "subjects": [
-        { "name": "数学", "score": 42 },
-        { "name": "物理", "score": 38 }
-      ]
-    },
-    {
-      "name": "鈴木",
-      "subjects": [
-        { "name": "英語", "score": 56 }
-      ]
-    }
-  ]
-}
-```
-
-/api/ranking?subject=1
+/api/ranking?id=1
 ``` json
 {
   "subject": "数学",
@@ -122,79 +100,122 @@
 }
 ```
 
-## レスポンスボディ (400)
+## レスポンスボディ （異常系）
 
-/api/register / リクエスト不正
+成績登録
+
+/api/register / POST以外のメソッドを受信した（405）
+``` json
+{}
+```
+
+/api/register / JSONがおかしい、変換できない（400）
 ``` json
 {
-  "error": "Bad Request",
-  "code": "INVALID_REQUEST"
+  "errors": [
+    { "message": "INVALID_REQUEST" }
+  ]
 }
 ```
 
-/api/register / 生徒が存在しない
+/api/register / 生徒が存在しない（400）
 ``` json
 {
-  "error": "Bad Request",
-  "code": "STUDENT_NOT_EXIST"
+  "errors": [
+    { "message": "STUDENT_NOT_EXIST" }
+  ]
 }
 ```
 
-/api/register / 科目が存在しない
+/api/register / 科目が存在しない（400）
 ``` json
 {
-  "error": "Bad Request",
-  "code": "SUBJECT_NOT_EXIST"
+  "errors": [
+    { "message": "SUBJECT_NOT_EXIST" }
+  ]
 }
 ```
 
-/api/register / 点数が範囲外
+/api/register / 点数が範囲外（400）
 ``` json
 {
-  "error": "Bad Request",
-  "code": "SCORE_OUT_OF_RANGE"
+  "errors": [
+    { "message": "SCORE_OUT_OF_RANGE" }
+  ]
+}
+```
+
+/api/register / パラメータ値異常の複合（400）
+``` json
+{
+  "errors": [
+    { "message": "STUDENT_NOT_EXIST" },
+    { "message": "SCORE_OUT_OF_RANGE" }
+  ]
 }
 ``` 
 
-/api/performance?student=abc / 生徒ID不正
+/api/register / POST以外のメソッドを受信した（405）
+``` json
+{}
+```
+
+個人別スコア表示
+
+/api/scores?id=1 / GET以外のメソッドを受信した（405）
+``` json
+{}
+```
+
+/api/scores?id=abc / クエリがない、またはID数値変換失敗（400）
 ``` json
 {
-  "error": "Bad Request",
-  "code": "INVALID_STUDENT_ID"
+  "errors": [
+    { "message": "INVALID_REQUEST" }
+  ]
 }
 ```
 
-/api/ranking?subject=abc / 科目ID不正
+/api/scores?id=999 / 生徒が存在しない（404）
 ``` json
 {
-  "error": "Bad Request",
-  "code": "INVALID_SUBJECT_ID"
-}
-```
-## レスポンスボディ (403)
-
-URIが上記以外のもの
-``` json
-{
-  "error": "Forbidden",
-  "code": "NO_PERMISSION"
+  "errors": [
+    { "message": "STUDENT_NOT_FOUND" }
+  ]
 }
 ```
 
-## レスポンスボディ (404)
+成績ランキング表示
 
-/api/performance?student=999 / 生徒が存在しない
+/api/ranking?id=1 / GET以外のメソッドを受信した（405）
+``` json
+{}
+```
+
+/api/ranking?id=abc / クエリがない、またはID数値変換失敗（400）
 ``` json
 {
-  "error": "Not Found",
-  "code": "STUDENT_NOT_FOUND"
+  "errors": [
+    { "message": "INVALID_REQUEST" }
+  ]
 }
 ```
 
-/api/ranking?subject=999 / 科目が存在しない
+/api/ranking?id=999 / 科目が存在しない（404）
 ``` json
 {
-  "error": "Not Found",
-  "code": "SUBJECT_NOT_FOUND"
+  "errors": [
+    { "message": "SUBJECT_NOT_FOUND" }
+  ]
 }
+```
+
+URLが上記以外のもの（403）
+``` json
+{}
+```
+
+が上記以外のもの（403）
+``` json
+{}
 ```
