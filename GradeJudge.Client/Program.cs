@@ -12,8 +12,8 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 public partial class Program
 {
     static HttpClient client = new();
-    // static string deviceUrl = "http://172.16.7.10:8080"; // サーバーURL
-    static string deviceUrl = "http://localhost:8080";
+    static string deviceUrl = "http://172.16.7.10:8080"; // サーバーURL
+    // static string deviceUrl = "http://localhost:8080";
 
     // ロガー設定
     private static readonly Logger sysLogger = LogManager.GetLogger("GradeJudge.Client.System"); // メイン操作用
@@ -71,7 +71,7 @@ public partial class Program
     static async Task<Grades> TitleScene()
     {
         // システムログ：初期画面
-        sysLogger.Info("初期画面表示");
+        sysLogger.Info("メニュー画面表示");
 
         Console.Clear();
 
@@ -131,24 +131,33 @@ public partial class Program
                 {
                     var student = await response.Content.ReadFromJsonAsync<StudentGrade>();
 
-                    apiLogger.Info("正常レスポンス:API={0}", student);
+                    apiLogger.Info("正常レスポンス:{0}", response.StatusCode);
 
                     Console.WriteLine($"名前：{student.Name,5}");
                     Console.WriteLine("----------------------------------");
                     foreach (var subject in student.Subjects)
                     {
-                        Console.WriteLine($"{subject.Name,5}:{subject.Score,4}点");
+                        Console.WriteLine($"{subject.Name,-6}:{subject.Score,4}点");
                     }
                 }
                 else
                 {
-                    var error =  await response.Content.ReadFromJsonAsync<List<ApiError>>();
-
-                    apiLogger.Warn("異常レスポンス:API={0}", error);
-
-                    foreach (var err in error)
+                    if(response.Content.Headers.ContentLength == 0)
                     {
-                        switch (err?.Message)
+                        apiLogger.Warn("異常レスポンス:{0}", response.StatusCode);
+                        Console.WriteLine("エラーが発生しました");
+                        Console.SetCursorPosition(0, 0);
+                        continue;
+                    }
+
+                    var error =  await response.Content.ReadFromJsonAsync<ApiError>();
+
+                    apiLogger.Warn("異常レスポンス:{0}", response.StatusCode);
+
+                    foreach (var err in error.Errors)
+                    {
+                        apiLogger.Warn("Message:{0}", err?.Message);
+                        switch (err.Message)
                         {
                             case "INVALID_REQUEST":
                                 Console.WriteLine("生徒IDが不正です");
@@ -159,7 +168,7 @@ public partial class Program
                                 break;
 
                             default:
-                                Console.WriteLine("アクセス失敗");
+                                Console.WriteLine($"不明なエラー:{err.Message}");
                                 break;
                         }
                     }
@@ -175,11 +184,11 @@ public partial class Program
                 apiLogger.Warn("タイムアウト}");
                 Console.WriteLine("タイムアウトしました");
             }
-            catch (Exception ex)
-            {
-                apiLogger.Warn("予期しないエラー:{0}", ex.Message);
-                Console.WriteLine($"予期しないエラー: {ex.Message}");
-            }
+            //catch (Exception ex)
+            //{
+            //    apiLogger.Warn("予期しないエラー:{0}", ex.Message);
+            //    Console.WriteLine($"予期しないエラー: {ex.Message}");
+            //}
 
             Console.SetCursorPosition(0, 0);
         }
@@ -241,18 +250,27 @@ public partial class Program
 
                 if (response.IsSuccessStatusCode)
                 {
-                    apiLogger.Info("正常レスポンス:API={0}", response);
+                    apiLogger.Info("正常レスポンス:{0}", response.StatusCode);
 
                     Console.WriteLine("成績の登録に成功しました");
                 }
                 else
                 {
-                    var error = await response.Content.ReadFromJsonAsync<List<ApiError>>();
-
-                    apiLogger.Warn("異常レスポンス:API={0}", error);
-
-                    foreach (var err in error)
+                    if (response.Content.Headers.ContentLength == 0)
                     {
+                        apiLogger.Warn("異常レスポンス:{0}", response.StatusCode);
+                        Console.WriteLine("エラーが発生しました");
+                        Console.SetCursorPosition(0, 0);
+                        continue;
+                    }
+
+                    var error = await response.Content.ReadFromJsonAsync<ApiError>();
+
+                    apiLogger.Warn("異常レスポンス:{0}", response.StatusCode);
+
+                    foreach (var err in error.Errors)
+                    {
+                        apiLogger.Warn("Message:{0}", err?.Message);
                         switch (err?.Message)
                         {
                             case "INVALID_REQUEST":
@@ -288,10 +306,10 @@ public partial class Program
                 apiLogger.Warn("タイムアウト}");
                 Console.WriteLine("タイムアウトしました");
             }
-            catch (Exception ex)
+            catch (FormatException ex)
             {
-                apiLogger.Warn("予期しないエラー:{0}", ex.Message);
-                Console.WriteLine($"予期しないエラー: {ex.Message}");
+                apiLogger.Warn("入力不正:{0}", ex.Message);
+                Console.WriteLine($"入力が不正です: {ex.Message}");
             }
 
             Console.SetCursorPosition(0, 0);
@@ -334,7 +352,7 @@ public partial class Program
                 {
                     var subject = await response.Content.ReadFromJsonAsync<SubjectGrade>();
 
-                    apiLogger.Info("正常レスポンス:API={0}", subject);
+                    apiLogger.Info("正常レスポンス:{0}", response.StatusCode);
 
                     var top5 = subject.Students.OrderByDescending(s => s.Score).Take(5).ToList();
 
@@ -343,17 +361,26 @@ public partial class Program
                     Console.WriteLine("----------------------------------");
                     foreach (var student in top5)
                     {
-                        Console.WriteLine($"{student.Name,5}:{student.Score,4}点");
+                        Console.WriteLine($"{student.Name,-16}:{student.Score,4}点");
                     }
                 }
                 else
                 {
-                    var error = await response.Content.ReadFromJsonAsync<List<ApiError>>();
-
-                    apiLogger.Warn("異常レスポンス:API={0}", error);
-
-                    foreach (var err in error)
+                    if (response.Content.Headers.ContentLength == 0)
                     {
+                        apiLogger.Warn("異常レスポンス:{0}", response.StatusCode);
+                        Console.WriteLine("エラーが発生しました");
+                        Console.SetCursorPosition(0, 0);
+                        continue;
+                    }
+
+                    var error = await response.Content.ReadFromJsonAsync<ApiError>();
+
+                    apiLogger.Warn("異常レスポンス:{0}", response.StatusCode);
+
+                    foreach (var err in error.Errors)
+                    {
+                        apiLogger.Warn("Message:{0}", err?.Message);
                         switch (err?.Message)
                         {
                             case "INVALID_REQUEST":
@@ -381,11 +408,11 @@ public partial class Program
                 apiLogger.Warn("タイムアウト}");
                 Console.WriteLine("タイムアウトしました");
             }
-            catch (Exception ex)
-            {
-                apiLogger.Warn("予期しないエラー:{0}", ex.Message);
-                Console.WriteLine($"予期しないエラー: {ex.Message}");
-            }
+            //catch (Exception ex)
+            //{
+            //    apiLogger.Warn("予期しないエラー:{0}", ex.Message);
+            //    Console.WriteLine($"予期しないエラー: {ex.Message}");
+            //}
 
             Console.SetCursorPosition(0, 0);
         }

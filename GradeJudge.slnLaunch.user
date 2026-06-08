@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "新しいプロファイル",
+    "Projects": [
+      {
+        "Path": "GradeJudge.Client\\GradeJudge.Client.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "GradeJudge.Server\\GradeJudge.Server.csproj",
+        "Action": "StartWithoutDebugging"
+      }
+    ]
+  }
+]
